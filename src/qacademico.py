@@ -10,6 +10,7 @@ from .models import (
     HorarioPeriodoItem,
     TurnoPeriodo,
     PeriodoLetivo,
+    BoletimItem,
 )
 from bs4 import BeautifulSoup
 from pydantic import TypeAdapter
@@ -17,10 +18,11 @@ from pydantic import TypeAdapter
 
 class QAcademico:
     BASE_URL = "https://antigo.qacademico.ifce.edu.br"
-    REGEX_RSA = re.compile(r'new RSAKeyPair\(.*"(\w+)",.*"(\w+)"', re.DOTALL)
+    __REGEX_RSA = re.compile(r'new RSAKeyPair\(.*"(\w+)",.*"(\w+)"', re.DOTALL)
     API_URL = f"{BASE_URL}/webapp/api"
-    disciplinas_ta = TypeAdapter(List[Disciplina])
-    periodos_ta = TypeAdapter(List[PeriodoLetivo])
+    __disciplinas_ta = TypeAdapter(List[Disciplina])
+    __periodos_ta = TypeAdapter(List[PeriodoLetivo])
+    __boletim_ta = TypeAdapter(List[BoletimItem])
 
     def __init__(self) -> None:
         self.__session = requests.Session()
@@ -55,7 +57,7 @@ class QAcademico:
         if not rsa_req.ok:
             return False
 
-        if (search := self.REGEX_RSA.search(rsa_req.text)) is None:
+        if (search := self.__REGEX_RSA.search(rsa_req.text)) is None:
             return False
         exp, mod = search.groups()
 
@@ -90,7 +92,7 @@ class QAcademico:
             },
         )
 
-        return self.disciplinas_ta.validate_json(req.text)
+        return self.__disciplinas_ta.validate_json(req.text)
 
     def usuario(self) -> Usuario:
         req = self.__session.get(f"{self.API_URL}/autenticacao/usuario-autenticado")
@@ -142,4 +144,14 @@ class QAcademico:
         if not req.ok:
             return None
 
-        return self.periodos_ta.validate_json(req.text)
+        return self.__periodos_ta.validate_json(req.text)
+
+    def boletim(self, periodo: PeriodoLetivo) -> List[BoletimItem] | None:
+        req = self.__session.get(
+            f"{self.API_URL}/boletim/disciplinas",
+            params=periodo.model_dump(by_alias=True),
+        )
+        if not req.ok:
+            return None
+
+        return self.__boletim_ta.validate_json(req.text)
