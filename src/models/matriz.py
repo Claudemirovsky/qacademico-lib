@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel, Field
 
 
@@ -24,4 +22,4 @@ class Matriz(BaseModel):
     numero_periodos: int = Field(alias="numeroPeriodos")
     situacao: str
     numero_habilitacoes: int = Field(alias="numeroHabilitacoes")
-    habilitacoes: List[Habilitacao]
+    habilitacoes: list[Habilitacao]

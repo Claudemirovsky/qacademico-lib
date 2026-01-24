@@ -1,6 +1,5 @@
 import re
 import requests
-from typing import List
 from .models import (
     Disciplina,
     Matriz,
@@ -20,9 +19,9 @@ class QAcademico:
     BASE_URL = "https://antigo.qacademico.ifce.edu.br"
     __REGEX_RSA = re.compile(r'new RSAKeyPair\(.*"(\w+)",.*"(\w+)"', re.DOTALL)
     API_URL = f"{BASE_URL}/webapp/api"
-    __disciplinas_ta = TypeAdapter(List[Disciplina])
-    __periodos_ta = TypeAdapter(List[PeriodoLetivo])
-    __boletim_ta = TypeAdapter(List[BoletimItem])
+    __disciplinas_ta = TypeAdapter(list[Disciplina])
+    __periodos_ta = TypeAdapter(list[PeriodoLetivo])
+    __boletim_ta = TypeAdapter(list[BoletimItem])
 
     def __init__(self) -> None:
         self.__session = requests.Session()
@@ -83,7 +82,7 @@ class QAcademico:
 
         return Matriz.model_validate_json(req.text)
 
-    def disciplinas(self, matriz: Matriz) -> List[Disciplina]:
+    def disciplinas(self, matriz: Matriz) -> list[Disciplina]:
         req = self.__session.get(
             f"{self.API_URL}/matriz-curricular/disciplinas",
             params={
@@ -148,14 +147,14 @@ class QAcademico:
                 data[key].items[time] = HorarioPeriodoItem(cadeira=cadeira, sala=sala)
         return data
 
-    def periodos_letivos(self) -> List[PeriodoLetivo] | None:
+    def periodos_letivos(self) -> list[PeriodoLetivo] | None:
         req = self.__session.get(f"{self.API_URL}/boletim/periodos-letivos")
         if not req.ok:
             return None
 
         return self.__periodos_ta.validate_json(req.text)
 
-    def boletim(self, periodo: PeriodoLetivo) -> List[BoletimItem] | None:
+    def boletim(self, periodo: PeriodoLetivo) -> list[BoletimItem] | None:
         req = self.__session.get(
             f"{self.API_URL}/boletim/disciplinas",
             params=periodo.model_dump(by_alias=True),

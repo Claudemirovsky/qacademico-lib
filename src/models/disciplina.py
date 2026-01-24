@@ -1,4 +1,3 @@
-from typing import List
 from pydantic import BaseModel, Field
 
 
@@ -17,7 +16,7 @@ class Disciplina(BaseModel):
     credito_requisito: int = Field(alias="creditoRequisito")
     optativa: bool
     tipo: int
-    pre_requisitos_lista: List[str] = Field(alias="preRequisitosLista")
+    pre_requisitos_lista: list[str] = Field(alias="preRequisitosLista")
     pre_requisitos: str = Field(alias="preRequisitos")
-    co_requisitos_lista: List[str] = Field(alias="coRequisitosLista")
+    co_requisitos_lista: list[str] = Field(alias="coRequisitosLista")
     co_requisitos: str = Field(alias="coRequisitos")
