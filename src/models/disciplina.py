@@ -1,21 +1,23 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Disciplina(BaseModel):
-    idHabilitacao: int
+    id: int = Field(alias="idDisciplina")
+    id_habilitacao: int = Field(alias="idHabilitacao")
     habilitacao: str
-    idDisciplina: int
     disciplina: str
-    numeroPeriodo: int
-    cargaHoraria: int
-    cargaHorariaPraticaProfissional: int
+    numero_periodo: int = Field(alias="numeroPeriodo")
+    carga_horaria: int = Field(alias="cargaHoraria")
+    carga_horaria_pratica_profissional: int = Field(
+        alias="cargaHorariaPraticaProfissional"
+    )
     credito: int
     sigla: str
-    creditoRequisito: int
+    credito_requisito: int = Field(alias="creditoRequisito")
     optativa: bool
     tipo: int
-    preRequisitosLista: List[str]
-    preRequisitos: str
-    coRequisitosLista: List
-    coRequisitos: str
+    pre_requisitos_lista: List[str] = Field(alias="preRequisitosLista")
+    pre_requisitos: str = Field(alias="preRequisitos")
+    co_requisitos_lista: List[str] = Field(alias="coRequisitosLista")
+    co_requisitos: str = Field(alias="coRequisitos")
