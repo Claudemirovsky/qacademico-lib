@@ -1,5 +1,7 @@
 import re
 import requests
+
+from src.models.coeficiente import Coeficiente
 from .models import (
     Disciplina,
     Matriz,
@@ -163,3 +165,10 @@ class QAcademico:
             return None
 
         return self.__boletim_ta.validate_json(req.text)
+
+    def coeficiente(self) -> Coeficiente | None:
+        req = self.__session.get(f"{self.API_URL}/dashboard/aluno/grafico-rendimento")
+        if not req.ok:
+            return None
+
+        return Coeficiente.model_validate_json(req.text, by_alias=True)
