@@ -99,10 +99,19 @@ class QAcademico:
 
         return Usuario.model_validate_json(req.text)
 
-    def horarios(self) -> dict[str, HorarioDiaItem] | None:
-        req = self.__session.get(
-            f"{self.BASE_URL}/qacademico/index.asp", params={"t": "2010"}
-        )
+    def horarios(
+        self, periodo: PeriodoLetivo | None = None
+    ) -> dict[str, HorarioDiaItem] | None:
+        params = {"t": 2010}
+        if periodo is not None:
+            params = {
+                **params,
+                "Exibir": "OK",
+                "COD_MATRICULA": -1,
+                "cmbanos": periodo.ano,
+                "cmbperiodos": periodo.periodo,
+            }
+        req = self.__session.get(f"{self.BASE_URL}/qacademico/index.asp", params=params)
         if not req.ok:
             return None
         doc = BeautifulSoup(req.text, "html.parser")
