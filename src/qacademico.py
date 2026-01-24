@@ -9,6 +9,7 @@ from .models import (
     HorarioDiaItem,
     HorarioPeriodoItem,
     TurnoPeriodo,
+    PeriodoLetivo,
 )
 from bs4 import BeautifulSoup
 from pydantic import TypeAdapter
@@ -19,6 +20,7 @@ class QAcademico:
     REGEX_RSA = re.compile(r'new RSAKeyPair\(.*"(\w+)",.*"(\w+)"', re.DOTALL)
     API_URL = f"{BASE_URL}/webapp/api"
     disciplinas_ta = TypeAdapter(List[Disciplina])
+    periodos_ta = TypeAdapter(List[PeriodoLetivo])
 
     def __init__(self) -> None:
         self.__session = requests.Session()
@@ -134,3 +136,10 @@ class QAcademico:
                 )
                 data[key].items[time] = HorarioPeriodoItem(cadeira=cadeira, sala=sala)
         return data
+
+    def periodos_letivos(self) -> List[PeriodoLetivo] | None:
+        req = self.__session.get(f"{self.API_URL}/boletim/periodos-letivos")
+        if not req.ok:
+            return None
+
+        return self.periodos_ta.validate_json(req.text)
