@@ -1,10 +1,10 @@
 import re
 import httpx
 import urllib.parse
-from src.models.coeficiente import Coeficiente
-from src.exceptions import LoginError, ApiError
-from src.parsers.horarios import parse_horarios
-from src.utils import rsa_encrypt
+from .models.coeficiente import Coeficiente
+from .exceptions import LoginError, ApiError
+from .parsers.horarios import parse_horarios
+from .utils import rsa_encrypt
 from .models import (
     Disciplina,
     Matriz,
